@@ -1,0 +1,87 @@
+name: Build TGLEGRAM APK
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CCACHE_COMPILERCHECK: "%compiler% -dumpmachine; %compiler% -dumpversion"
+      CCACHE_NOHASHDIR: "true"
+      CCACHE_MAXSIZE: "10G"
+      CCACHE_HARDLINK: "true"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Prepare API_KEYS and Keystore
+        run: |
+          cat << 'EOF' > ./API_KEYS
+          APP_ID = 29584662
+          APP_HASH = "bb32b3ac3c899d1658c4a4146e348750"
+          MAPS_V2_API = ""
+          SIGNING_KEY_PASSWORD = "tglegram_password"
+          SIGNING_KEY_ALIAS = "tglegram"
+          SIGNING_KEY_STORE_PASSWORD = "tglegram_password"
+          EOF
+
+          mkdir -p TMessagesProj/config
+          keytool -genkeypair -v \
+            -keystore TMessagesProj/config/tglegram.jks \
+            -alias tglegram \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass tglegram_password \
+            -keypass tglegram_password \
+            -dname "CN=TGLEGRAM, OU=TGLEGRAM, O=TGLEGRAM, L=City, S=State, C=US"
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Free Disk Space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/graalvm
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /usr/local/share/powershell
+          sudo rm -rf /usr/local/share/chromium
+          sudo rm -rf /usr/local/lib/node_modules
+          sudo apt-get clean
+          df -h
+
+      - name: Setup Android SDK & NDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK
+        run: |
+          yes | sdkmanager --install "ndk;21.4.7075529" "cmake;3.10.2.4988404"
+
+      - name: Install Build Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bison gcc make curl ninja-build ccache
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build TGLEGRAM with Gradle
+        run: ./gradlew assembleAfatRelease --stacktrace
+
+      - name: Upload TGLEGRAM APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: TGLEGRAM-Release-APK
+          path: |
+            TMessagesProj/build/outputs/apk/**/*.apk

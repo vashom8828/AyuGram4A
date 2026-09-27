@@ -138,10 +138,17 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("config/extera.jks")
-            storePassword localProperties.getProperty("SIGNING_KEY_STORE_PASSWORD")
-            keyAlias localProperties.getProperty("SIGNING_KEY_ALIAS")
-            keyPassword localProperties.getProperty("SIGNING_KEY_PASSWORD")
+            if (file("config/tglegram.jks").exists()) {
+                storeFile file("config/tglegram.jks")
+                storePassword "tglegram_password"
+                keyAlias "tglegram"
+                keyPassword "tglegram_password"
+            } else {
+                storeFile file("config/extera.jks")
+                storePassword localProperties.getProperty("SIGNING_KEY_STORE_PASSWORD")
+                keyAlias localProperties.getProperty("SIGNING_KEY_ALIAS")
+                keyPassword localProperties.getProperty("SIGNING_KEY_PASSWORD")
+            }
         }
     }
 
