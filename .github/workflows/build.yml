@@ -61,24 +61,26 @@ jobs:
           sudo apt-get clean
           df -h
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Accept Android Licenses & Install NDK
-        run: |
-          yes | sdkmanager --licenses || true
-          yes | sdkmanager "ndk;21.4.7075529" "cmake;3.10.2.4988404" || true
-
-      - name: Install Build Tools
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y bison gcc make curl ninja-build ccache
+
+      - name: Setup Android NDK and Accept Licenses
+        run: |
+          export SDK_MGR="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -f "$SDK_MGR" ]; then
+            SDK_MGR="sdkmanager"
+          fi
+          echo "Using sdkmanager at: $SDK_MGR"
+          yes | $SDK_MGR --licenses || true
+          yes | $SDK_MGR "ndk;21.4.7075529" "cmake;3.10.2.4988404" || true
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Build TGLEGRAM with Gradle
-        run: ./gradlew assembleAfatRelease --stacktrace
+        run: ./gradlew assembleAfatRelease --no-daemon --stacktrace
 
       - name: Upload TGLEGRAM APK
         uses: actions/upload-artifact@v4
