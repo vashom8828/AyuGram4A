@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:241188506271:android:2886f3d7ee90b82c7fb0aa",
         "android_client_info": {
-          "package_name": "com.radolyn.ayugram"
+          "package_name": "org.tglegram.messenger"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "241188506271-qa0vj8retq732m23dgurh852nrr7h8o6.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.radolyn.ayugram",
+            "package_name": "org.tglegram.messenger",
             "certificate_hash": "f27d68285b107eb06cf14c74bb866368f1fbdc7f"
           }
         },
