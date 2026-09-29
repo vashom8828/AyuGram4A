@@ -26,4 +26,12 @@ public abstract class AyuDatabase extends RoomDatabase {
     public abstract EditedMessageDao editedMessageDao();
 
     public abstract DeletedMessageDao deletedMessageDao();
+
+    public static AyuDatabase getInstance() {
+        return AyuData.getDatabase();
+    }
+
+    public static AyuDatabase getInstance(int account) {
+        return AyuData.getDatabase();
+    }
 }

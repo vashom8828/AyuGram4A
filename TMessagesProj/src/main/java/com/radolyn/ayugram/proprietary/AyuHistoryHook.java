@@ -9,6 +9,7 @@ package com.radolyn.ayugram.proprietary;
 import android.util.Pair;
 import android.util.SparseArray;
 import com.radolyn.ayugram.AyuConfig;
+import com.radolyn.ayugram.database.AyuData;
 import com.radolyn.ayugram.database.AyuDatabase;
 import com.radolyn.ayugram.database.entities.DeletedMessageFull;
 import org.telegram.messenger.FileLog;
@@ -48,7 +49,7 @@ public class AyuHistoryHook {
         }
         try {
             long userId = UserConfig.getInstance(currentAccount).getClientUserId();
-            var dao = AyuDatabase.getInstance(currentAccount).deletedMessageDao();
+            var dao = AyuData.getDeletedMessageDao();
             List<DeletedMessageFull> list = dao.getMessages(userId, dialogId, topicId, startId, endId, limit);
             if (list == null || list.isEmpty()) {
                 return;
